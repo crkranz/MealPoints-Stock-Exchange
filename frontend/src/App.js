@@ -4,6 +4,8 @@ import Login from './Login';
 import Register from './Register';
 import Dashboard from './Dashboard';
 import Logout from './Logout';
+import Offer from './Offer';
+import MyOffer from './MyOffer';
 // A component to protect the dashboard and portfolio routes
 const PrivateRoute = ({ element: Component }) => {
     const user = JSON.parse(localStorage.getItem('user')); // Get user data from localStorage
@@ -39,8 +41,9 @@ const App = () => {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/logout" element={<Logout />} />
-                    {/* Protected Routes */}
-                    <Route path="/dashboard" element={<PrivateRoute element={Dashboard} />} />
+                    <Route path="/offer" element={<Offer />} />
+                    <Route path="/myoffer" element={<MyOffer />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
                 </Routes>
             </div>
         </Router>

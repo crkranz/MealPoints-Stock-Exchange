@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const socket = io('http://localhost:3000', {
     transports: ['websocket'], // Force WebSocket transport
 });
-
-
-const Portfolio = () => {
+const Dashboard = () => {
+    const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [mealPoints, setMealPoints] = useState(0);
     const [accountBalance, setAccountBalance] = useState(0);
@@ -20,19 +20,19 @@ const Portfolio = () => {
     const [matchedDetails, setMatchedDetails] = useState([]);
     const [allMatches, setAllMatches] = useState([]);
     const [recentMatches, setRecentMatches] = useState([]);
+    const location = useLocation();
+    const { username } = location.state || {};
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            setUser(parsedUser.user);
-
+        if (username) {
+            setUser({ username });
             const fetchUserDetails = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/user/${parsedUser.user.username}`);
+                    const response = await fetch(`http://localhost:3000/user/${username}`);
                     const data = await response.json();
                     setMealPoints(data.mealPoints); // Set initial meal points
                     setAccountBalance(data.accountBalance); // Set initial account balance
+                    console.log(username);
                 } catch (error) {
                     console.error('Error fetching user details:', error);
                 }
@@ -40,11 +40,12 @@ const Portfolio = () => {
 
             fetchUserDetails();
         } else {
-            window.location.href = '/login';
+            window.location.href = '/login';  // Redirect to login if no username is found
         }
 
         const fetchOrders = async () => {
             try {
+
                 const response = await fetch('http://localhost:3000/orders');
                 const data = await response.json();
                 if (Array.isArray(data)) {
@@ -79,22 +80,20 @@ const Portfolio = () => {
             setOrders(data);  // Update orders in real-time
         });
 
-        if (user) {
-            console.log('User set, initializing socket listener');
-            socket.on('balanceUpdate', (data) => {
-                console.log('Balance update received:', data);
-                if (data.username === user.username) {
-                    setMealPoints(data.mealPoints);
-                    setAccountBalance(data.accountBalance);
-                } else {
-                    console.warn('User does not match the update.');
-                }
-            });
+        socket.on('balanceUpdate', (data) => {
+            console.log('Balance updated:', data);
+            // Assuming you have the current user's username stored in a variable
+            const currentUser = username;  // Replace this with the actual variable holding the logged-in user's username
+            if (data.username === currentUser) {
+                console.log('Balance updated:', data);
+                // Update UI only for the current logged-in user
+                setMealPoints(data.mealPoints);  // Update meal points
+                setAccountBalance(data.accountBalance);  // Update account balance
+            }
+            console.log('Balance updated:not matching');
+        });
 
-            return () => {
-                socket.off('balanceUpdate');
-            };
-        }
+
         // Listen for matches from the server
         socket.on('allMatches', (data) => {
             setAllMatches(data);
@@ -297,7 +296,25 @@ const Portfolio = () => {
             alert('An error occurred while completing the transaction.');
         }
     };
+    const handleLogout = () => {
+        // Clear user state
+        setUser(null);
 
+        // Disconnect from the socket server
+        socket.disconnect();
+
+        // Redirect the user to the login page
+        navigate('/login');
+    };
+    const handleOffer = (order) => {
+        console.log("Navigating with username:", username, "and order:", order);  // Debugging log
+        navigate('/offer', { state: { username, order } });
+    };
+
+    const handleMyOffer = () => {
+        // Pass username when navigating to 'myoffer' page
+        navigate('/myoffer', { state: { username } });
+    };
 
     if (!user) {
         return <div>Loading...</div>;
@@ -306,6 +323,20 @@ const Portfolio = () => {
     return (
         <div>
             <h1>Welcome to Dashboard, {user.username}</h1>
+            <div>
+                <h3>Current Value</h3>
+                {recentMatches.length > 0 ? (
+                    <p>
+                        <strong>Price:</strong> {recentMatches[0].price}
+                    </p>
+                ) : (
+                    <p>No recent matches available.</p>
+                )}
+            </div>
+
+            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleMyOffer}>My Offers</button>
+
             <div>
                 <p><strong>Meal Points:</strong> {mealPoints}</p>
                 <strong>Account Balance:</strong> ${accountBalance?.toFixed(2) || "0.00"}
@@ -351,6 +382,9 @@ const Portfolio = () => {
                                             <button onClick={() => handleInstantAskTransaction(order)}>
                                                 Instant Transaction
                                             </button>
+                                            <button onClick={() => handleOffer(order)}>
+                                                Private Offer
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -384,6 +418,9 @@ const Portfolio = () => {
                                             <button onClick={() => handleInstantBidTransaction(order)}>
                                                 Instant Transaction
                                             </button>
+                                            <button onClick={() => handleOffer(order)}>
+                                                Private Offer
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -412,6 +449,7 @@ const Portfolio = () => {
                 <button onClick={handlePlaceBid}>Place Bid</button>
                 <button onClick={handlePlaceAsk}>Place Ask</button>
             </div>
+
             <div>
                 <h3>Recent Matches</h3>
                 {recentMatches.map((match, index) => (
@@ -435,4 +473,4 @@ const Portfolio = () => {
     );
 };
 
-export default Portfolio;
+export default Dashboard;

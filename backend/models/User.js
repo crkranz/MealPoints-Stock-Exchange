@@ -90,6 +90,17 @@ const matchSchema = new mongoose.Schema({
 });
 
 const Match = mongoose.model('Match', matchSchema);
+const offerSchema = new mongoose.Schema({
+    orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: true },
+    senderUsername: { type: String, required: true },
+    receiverUsername: { type: String, required: true },
+    mealPoints: { type: Number, required: true },
+    pricePerMealPoint: { type: Number, required: true },
+    status: { type: String, enum: ['pending', 'accepted', 'denied'], default: 'pending' },
+    timestamp: { type: Date, default: Date.now },
+});
+const Offer = mongoose.model('Offer', offerSchema);
 
 
-module.exports = { User, Order, Match };
+
+module.exports = { User, Order, Match, Offer };

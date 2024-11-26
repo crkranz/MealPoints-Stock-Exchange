@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { User, Order, Match } = require('../backend/models/User'); // Import models
+const { User, Order, Match, Offer } = require('../backend/models/User'); // Import models
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -15,7 +15,7 @@ const PORT = 3000;
 // CORS configuration: Allow only your frontend (React) to access
 const corsOptions = {
     origin: 'http://localhost:3001', // Allow your frontend running on port 3001
-    methods: ['GET', 'POST'], // Allowed methods
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allowed methods
     allowedHeaders: ['Content-Type'], // Allowed headers
 };
 
@@ -33,28 +33,35 @@ mongoose.connect('mongodb+srv://rivakranz:w0VI95bttu0hEVFC@cluster0.ijhei.mongod
         // Watch for real-time updates on the "users" collection
         const userCollection = mongoose.connection.collection('users');
         userCollection.watch().on('change', async (change) => {
-            console.log('Database change detected (users):', change); // Debugging
+            console.log('Database change detected (users):', change); // Log the full change object
 
             if (change.operationType === 'update') {
-                const userId = change.documentKey._id; // Get the user's unique identifier
+                console.log('Update operation detected'); // Confirm we're in the right operation type
+
+                const userId = change.documentKey._id; // Extract the user ID
+                console.log('Extracted user ID:', userId);
 
                 try {
                     // Fetch the updated user from the database
-                    const updatedUser = await User.findById(userId).lean(); // Use .lean() for a plain JavaScript object
+                    const updatedUser = await User.findById(userId).lean(); // Use .lean() for efficiency
+                    console.log('Fetched updated user:', updatedUser);
 
                     if (updatedUser) {
-                        // Emit the full user data to clients
+                        // Emit the updated balance to the client
                         console.log('Emitting balanceUpdate for user:', updatedUser.username);
                         io.emit('balanceUpdate', {
                             username: updatedUser.username,
                             mealPoints: updatedUser.mealPoints,
                             accountBalance: updatedUser.accountBalance,
                         });
-
+                    } else {
+                        console.warn('No user found for ID:', userId);
                     }
                 } catch (error) {
                     console.error('Error fetching updated user:', error);
                 }
+            } else {
+                console.log('Operation type is not "update":', change.operationType);
             }
         });
 
@@ -395,6 +402,198 @@ app.post('/placeBid', async (req, res) => {
     }
 });
 
+app.get('/orders/:orderId', async (req, res) => {
+    const { orderId } = req.params; // Extract orderId from request parameters
+
+    try {
+        // Fetch the order by its ID, ensuring it's a valid ObjectId
+        const order = await Order.findById(orderId)
+            .populate('user', 'username') // Populate the user field to get the username
+            .exec();
+
+        // If no order is found, return a 404 error
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found' });
+        }
+
+        // Return the found order
+        res.status(200).json(order);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch order details' });
+    }
+});
+
+app.patch('/reject/:id', async (req, res) => {
+    try {
+        const offerId = req.params.id;
+
+        // Find the offer by its ID and update its status to 'denied'
+        const offer = await Offer.findByIdAndUpdate(
+            offerId,
+            { status: 'denied' },
+            { new: true } // Return the updated document
+        );
+
+        if (!offer) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+
+        res.json(offer); // Send the updated offer back
+    } catch (error) {
+        console.error('Error rejecting offer:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+app.patch('/acceptOfferOnBid/:id', async (req, res) => {
+    try {
+        const offerId = req.params.id;
+
+        // Find the offer by its ID
+        const offer = await Offer.findById(offerId).populate('orderId');
+        if (!offer) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+
+        const { mealPoints: offerMealPoints, pricePerMealPoint: offerPricePerMealPoint, senderUsername, receiverUsername, orderId } = offer;
+
+        // Ensure the associated order exists
+        const order = await Order.findById(orderId._id);
+        if (!order) {
+            return res.status(404).json({ error: 'Associated order not found' });
+        }
+
+        // Check if the order is still open
+        if (order.status !== 'open') {
+            return res.status(400).json({ error: 'Order is no longer open.' });
+        }
+
+        // Update the associated order status to 'fulfilled'
+        order.status = 'fulfilled';
+        await order.save();
+
+        // Create a match for the transaction
+        const match = new Match({
+            bidOrder: orderId._id, // Reference to the matched order
+            price: offerPricePerMealPoint, // Match price
+            pointsMatched: offerMealPoints, // Matched points
+        });
+        await match.save();
+
+        // Update sender and receiver balances
+        const sender = await User.findOne({ username: senderUsername });
+        const receiver = await User.findOne({ username: receiverUsername });
+
+        if (!sender || !receiver) {
+            return res.status(404).json({ error: 'Sender or Receiver not found' });
+        }
+
+        const transactionValue = offerMealPoints * offerPricePerMealPoint;
+
+        // Deduct meal points and add balance to the sender
+        sender.mealPoints -= offerMealPoints;
+        sender.accountBalance += transactionValue;
+
+        // Add meal points and deduct balance from the receiver
+        receiver.mealPoints += offerMealPoints;
+        receiver.accountBalance -= transactionValue;
+
+        await sender.save();
+        await receiver.save();
+
+        // Update the offer status to 'accepted'
+        offer.status = 'accepted';
+        await offer.save();
+
+        res.json({
+            message: 'Offer accepted successfully!',
+            updatedOffer: offer,
+            match,
+            sender: { username: sender.username, mealPoints: sender.mealPoints, accountBalance: sender.accountBalance },
+            receiver: { username: receiver.username, mealPoints: receiver.mealPoints, accountBalance: receiver.accountBalance },
+        });
+    } catch (error) {
+        console.error('Error accepting offer:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+
+app.patch('/acceptOfferOnAsk/:id', async (req, res) => {
+    try {
+        const offerId = req.params.id;
+
+        // Find the offer by its ID
+        const offer = await Offer.findById(offerId).populate('orderId');
+        if (!offer) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+
+        const { mealPoints: offerMealPoints, pricePerMealPoint: offerPricePerMealPoint, senderUsername, receiverUsername, orderId } = offer;
+
+        // Ensure the associated order exists
+        const order = await Order.findById(orderId._id);
+        if (!order) {
+            return res.status(404).json({ error: 'Associated order not found' });
+        }
+
+        // Check if the order is still open
+        if (order.status !== 'open') {
+            return res.status(400).json({ error: 'Order is no longer open.' });
+        }
+
+        // Update the associated order status to 'fulfilled'
+        order.status = 'fulfilled';
+        await order.save();
+
+        // Create a match for the transaction
+        const match = new Match({
+            askOrder: orderId._id, // Reference to the matched order
+            price: offerPricePerMealPoint, // Match price
+            pointsMatched: offerMealPoints, // Matched points
+        });
+        await match.save();
+
+        // Update sender and receiver balances
+        const sender = await User.findOne({ username: senderUsername });
+        const receiver = await User.findOne({ username: receiverUsername });
+
+        if (!sender || !receiver) {
+            return res.status(404).json({ error: 'Sender or Receiver not found' });
+        }
+
+        const transactionValue = offerMealPoints * offerPricePerMealPoint;
+
+        // Deduct balance and add meal points to the sender
+        sender.accountBalance -= transactionValue;
+        sender.mealPoints += offerMealPoints;
+
+        // Add balance and deduct meal points from the receiver
+        receiver.accountBalance += transactionValue;
+        receiver.mealPoints -= offerMealPoints;
+
+        await sender.save();
+        await receiver.save();
+
+        // Update the offer status to 'accepted'
+        offer.status = 'accepted';
+        await offer.save();
+
+        res.json({
+            message: 'Offer accepted successfully!',
+            updatedOffer: offer,
+            match,
+            sender: { username: sender.username, mealPoints: sender.mealPoints, accountBalance: sender.accountBalance },
+            receiver: { username: receiver.username, mealPoints: receiver.mealPoints, accountBalance: receiver.accountBalance },
+        });
+    } catch (error) {
+        console.error('Error accepting offer:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 
 app.get('/user/:username', async (req, res) => {
     const { username } = req.params;
@@ -482,6 +681,85 @@ app.post('/create-order', async (req, res) => {
         res.status(500).json({ error: 'Failed to create order' });
     }
 });
+app.post('/create-offer', async (req, res) => {
+    try {
+        const { senderUsername, receiverUsername, mealPoints, pricePerMealPoint, orderId } = req.body;
+
+        // Validate input
+        if (!senderUsername || !receiverUsername || !mealPoints || !pricePerMealPoint || !orderId) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        // Check if the order exists
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ error: 'Order not found.' });
+        }
+
+        // Fetch sender user details
+        const sender = await User.findOne({ username: senderUsername });
+        if (!sender) {
+            return res.status(404).json({ error: 'Sender not found.' });
+        }
+
+        // Calculate the total cost of the offer
+        const totalCost = mealPoints * pricePerMealPoint;
+
+        // Validate sender has sufficient resources based on order type
+        if (order.type === 'ask') {
+            // For "ask" orders, sender must have enough money
+            if (sender.accountBalance < totalCost) {
+                return res.status(400).json({ error: 'Insufficient funds to create this offer.' });
+            }
+        } else if (order.type === 'bid') {
+            // For "bid" orders, sender must have enough meal points
+            if (sender.mealPoints < mealPoints) {
+                return res.status(400).json({ error: 'Insufficient meal points to create this offer.' });
+            }
+        } else {
+            return res.status(400).json({ error: 'Invalid order type.' });
+        }
+
+        // Construct the offer message dynamically
+        const offerMessage = `${mealPoints} meal points for $${pricePerMealPoint} per meal point`;
+
+        // Create and save the offer
+        const newOffer = new Offer({
+            senderUsername,
+            receiverUsername,
+            mealPoints,
+            pricePerMealPoint,
+            orderId,
+            offerText: offerMessage, // Include the dynamic offer message
+        });
+
+        await newOffer.save();
+
+        res.status(201).json({ message: 'Offer created successfully', offer: newOffer });
+    } catch (error) {
+        console.error('Error creating offer:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
+app.get('/offers/user/:username', async (req, res) => {
+    try {
+        const { username } = req.params;
+
+        const userOffers = await Offer.find({
+            $or: [
+                { senderUsername: username },
+                { receiverUsername: username }
+            ]
+        }).populate('orderId');
+
+        res.status(200).json(userOffers);
+    } catch (error) {
+        console.error('Error fetching user offers:', error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 // Real-Time Updates with Socket.IO
 io.on('connection', (socket) => {
@@ -513,18 +791,19 @@ io.on('connection', (socket) => {
     sendAllMatches();
     sendRecentMatches();
 
-    const sendBalanceUpdates = async () => {
+    const sendBalanceUpdates = async (socket, username) => {
         setInterval(async () => {
-            const user = await User.findOne({ username: 'exampleUsername' }); // Replace with real user lookup
+            const user = await User.findOne({ username });
             if (user) {
                 socket.emit('balanceUpdate', {
-                    username: user.username, // Send the username with the data
+                    username: user.username,
                     mealPoints: user.mealPoints,
                     accountBalance: user.accountBalance,
                 });
             }
         }, 5000); // Update every 5 seconds
     };
+
 
     sendBalanceUpdates();
 

@@ -21,8 +21,8 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
-        localStorage.setItem('user', JSON.stringify(data));  // Store user data in localStorage
-        navigate('/dashboard');  // Redirect to dashboard or 
+        // Send the username to the dashboard through React Router state
+        navigate('/dashboard', { state: { username } });
       } else {
         setError(data.error);
       }
