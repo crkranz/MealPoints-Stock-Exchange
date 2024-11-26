@@ -6,7 +6,7 @@ function App() {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:5000') // Express backend endpoint
+    axios.get('http://localhost:3000') // Express backend endpoint
       .then(res => setMessage(res.data))
       .catch(err => console.error(err));
   }, []);

@@ -1,13 +1,37 @@
 const mongoose = require('mongoose');
 
-// Order schema
 const orderSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, enum: ['bid', 'ask'], required: true },
-    mealPoints: { type: Number, required: true },
-    pricePerMealPoint: { type: Number, required: true },
-    status: { type: String, enum: ['open', 'fulfilled'], default: 'open' },
-    createdAt: { type: Date, default: Date.now },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    type: {
+        type: String,
+        enum: ['bid', 'ask'],
+        required: true
+    },
+    mealPoints: {
+        type: Number,
+        required: true
+    },
+    pricePerMealPoint: {
+        type: Number,
+        required: true
+    },
+    status: {
+        type: String,
+        enum: ['open', 'fulfilled'],
+        default: 'open'
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    matches: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Match'
+    }]
 });
 const Order = mongoose.model('Order', orderSchema);
 
@@ -40,4 +64,32 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = { User, Order };
+const matchSchema = new mongoose.Schema({
+    askOrder: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order',
+        required: false
+    },
+    bidOrder: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Order',
+        required: false
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    pointsMatched: {
+        type: Number,
+        required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+});
+
+const Match = mongoose.model('Match', matchSchema);
+
+
+module.exports = { User, Order, Match };

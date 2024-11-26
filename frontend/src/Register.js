@@ -3,9 +3,6 @@ import React, { useState } from 'react';
 const Register = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [buySell, setBuySell] = useState('buying'); // Default to "buying"
-    const [mealPoints, setMealPoints] = useState(0); // Default to 0 meal points
-    const [buySellPrice, setBuySellPrice] = useState(''); // What you're willing to buy/sell for
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -19,9 +16,6 @@ const Register = () => {
                 body: JSON.stringify({
                     username,
                     password,
-                    buySell,
-                    mealPoints,
-                    buySellPrice,
                 }),
             });
 
@@ -44,39 +38,15 @@ const Register = () => {
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                required
             />
             <input
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                required
             />
-
-            {/* Dropdown for Buy or Sell */}
-            <select
-                value={buySell}
-                onChange={(e) => setBuySell(e.target.value)}
-            >
-                <option value="buying">Buying</option>
-                <option value="selling">Selling</option>
-            </select>
-
-            {/* Input for Meal Points */}
-            <input
-                type="number"
-                placeholder="How many meal points you have/want"
-                value={mealPoints}
-                onChange={(e) => setMealPoints(e.target.value)}
-            />
-
-            {/* Input for What you're willing to buy/sell for */}
-            <input
-                type="text"
-                placeholder="What you're willing to buy/sell for"
-                value={buySellPrice}
-                onChange={(e) => setBuySellPrice(e.target.value)}
-            />
-
             <button type="submit">Register</button>
         </form>
     );

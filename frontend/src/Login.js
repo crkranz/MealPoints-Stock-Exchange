@@ -5,7 +5,7 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();  // useNavigate hook for redirecting
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,20 +21,15 @@ const Login = () => {
 
       const data = await response.json();
       if (response.ok) {
-        // Store user data in localStorage
-        localStorage.setItem('user', JSON.stringify(data)); // Ensure data is a string
-
-        alert('Login successful!');
-        navigate('/dashboard');  // Redirect to /dashboard
+        localStorage.setItem('user', JSON.stringify(data));  // Store user data in localStorage
+        navigate('/dashboard');  // Redirect to dashboard or 
       } else {
-        setError(data.error);  // Show error if any
+        setError(data.error);
       }
     } catch (err) {
-      console.error('Error:', err);
       setError('An error occurred during login');
     }
   };
-
 
   return (
     <div>
