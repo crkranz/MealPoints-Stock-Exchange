@@ -68,9 +68,9 @@ const Dashboard = () => {
                 }
                 const matches = await response.json();
 
-                // Set the initial matches (both all and recent)
+                // Set the initial matches 
                 setAllMatches(matches);
-                setRecentMatches(matches.slice(0, 5)); // Assuming you want the 5 most recent matches
+                setRecentMatches(matches.slice(0, 5)); 
             } catch (error) {
                 console.error('Error fetching matches:', error);
             }
@@ -84,8 +84,7 @@ const Dashboard = () => {
 
         socket.on('balanceUpdate', (data) => {
             console.log('Balance updated:', data);
-            // Assuming you have the current user's username stored in a variable
-            const currentUser = username;  // Replace this with the actual variable holding the logged-in user's username
+            const currentUser = username;  
             if (data.username === currentUser) {
                 console.log('Balance updated:', data);
                 // Update UI only for the current logged-in user
@@ -101,7 +100,7 @@ const Dashboard = () => {
             setAllMatches(data);
         });
 
-        // Listen for recent matches (list data)
+        // Listen for recent matches
         socket.on('recentMatches', (data) => {
             setRecentMatches(data);
         });
@@ -186,7 +185,6 @@ const Dashboard = () => {
                 const data = await response.json();
                 alert('Bid placed successfully!');
 
-                // Optionally, update the orders list with the new bid
                 setOrders(prevOrders => [...prevOrders, data.order]);
             } else {
                 const errorData = await response.json();
@@ -232,7 +230,6 @@ const Dashboard = () => {
                     setMatchedDetails(data.matchedDetails);
                 }
 
-                // Optionally, update the orders list with the new ask
                 setOrders(prevOrders => [...prevOrders, data.order]);
             } else {
                 const errorData = await response.json();
