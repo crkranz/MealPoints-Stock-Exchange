@@ -50,13 +50,12 @@ const DM = () => {
     const handleSendMessage = async () => {
         if (!message.trim()) return;
 
-        // Send message to backend via socket and also store it in DB
+        // Send message to backend with socket and also store it in DB
         socket.emit('sendMessage', { from: currentUser, to: targetUser, message });
 
-        // Update local chat immediately to reflect the sent message
+        // Update local chat immediately with new message
         setChat(prevChat => [...prevChat, { from: currentUser, message }]);
 
-        // Optionally, save to the server as well (you already have a fetch API for this)
         try {
             const response = await fetch('http://localhost:3000/sendMessage', {
                 method: 'POST',
