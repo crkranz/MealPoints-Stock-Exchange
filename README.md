@@ -26,3 +26,5 @@ Best Practices (5 points)
 - HTML output passes validator (3 points)
 
 Creative Portion (20 points)
+- Integrated Socket.IO into both the backend and frontend to enable real-time updates and seamless communication across various features. This integration ensures that users receive live updates on order matches, new bids, current market values, and private messages. It also includes watchers for updates to users, orders, and matches, ensuring that all changes are promptly captured. Real-time chat functionality has been added, allowing users to communicate instantly.
+- Implemented a private offer feature, allowing users to make direct offers on specific bids or asks. These offers are stored in the MongoDB offers collection and marked with statuses such as pending, accepted, or denied. Recipients can view and manage their offers through the "My Offers" page, deciding whether to accept or reject them. If an offer is accepted, the transaction is processed automatically, reflecting the updated meal points and account balances for both users.
