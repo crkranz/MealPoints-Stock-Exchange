@@ -12,15 +12,15 @@ const io = new Server(server)
 const PORT = 3000;
 
 
-// CORS configuration: Allow only your frontend (React) to access
+// CORS configuration: Allow only the frontend (React) to access
 const corsOptions = {
     origin: 'http://localhost:3001', // Allow your frontend running on port 3001
     methods: ['GET', 'POST', 'PATCH', 'DELETE'], // Allowed methods
     allowedHeaders: ['Content-Type'], // Allowed headers
 };
 
-app.use(cors(corsOptions)); // Enable CORS for your API
-app.use(express.json()); // For parsing JSON requests
+app.use(cors(corsOptions)); // Enable CORS for API
+app.use(express.json()); // to parse JSON requests
 
 // MongoDB connection
 mongoose.connect('mongodb+srv://rivakranz:w0VI95bttu0hEVFC@cluster0.ijhei.mongodb.net/mealpoint?retryWrites=true&w=majority', {
@@ -30,20 +30,20 @@ mongoose.connect('mongodb+srv://rivakranz:w0VI95bttu0hEVFC@cluster0.ijhei.mongod
     .then(() => {
         console.log('MongoDB connected');
 
-        // Watch for real-time updates on the "users" collection
+        // Watch for real-time updates on the users collection
         const userCollection = mongoose.connection.collection('users');
         userCollection.watch().on('change', async (change) => {
             console.log('Database change detected (users):', change); // Log the full change object
 
             if (change.operationType === 'update') {
-                console.log('Update operation detected'); // Confirm we're in the right operation type
+                console.log('Update operation detected'); // Confirm right operation type
 
-                const userId = change.documentKey._id; // Extract the user ID
+                const userId = change.documentKey._id; // Extract user ID
                 console.log('Extracted user ID:', userId);
 
                 try {
                     // Fetch the updated user from the database
-                    const updatedUser = await User.findById(userId).lean(); // Use .lean() for efficiency
+                    const updatedUser = await User.findById(userId).lean();
                     console.log('Fetched updated user:', updatedUser);
 
                     if (updatedUser) {
@@ -178,7 +178,7 @@ app.post('/updatepoints', async (req, res) => {
     const { username, mealPoints, accountBalance } = req.body;
 
     try {
-        // Validate input: check that mealPoints and accountBalance are numbers and not negative
+        // check that mealPoints and accountBalance are numbers and not negative
         if (typeof mealPoints !== 'number' || typeof accountBalance !== 'number') {
             return res.status(400).json({ error: 'Meal points and account balance must be numbers' });
         }
@@ -192,8 +192,8 @@ app.post('/updatepoints', async (req, res) => {
             { username },  // Find user by username
             {
                 $inc: {
-                    mealPoints: mealPoints || 0,  // Increment meal points (default to 0 if not provided)
-                    accountBalance: accountBalance || 0,  // Increment account balance (default to 0 if not provided)
+                    mealPoints: mealPoints || 0,  // Increment meal points 
+                    accountBalance: accountBalance || 0,  // Increment account balance 
                 }
             },
             { new: true }  // Return the updated user document
@@ -425,7 +425,7 @@ app.get('/orders/:orderId', async (req, res) => {
             .populate('user', 'username') // Populate the user field to get the username
             .exec();
 
-        // If no order is found, return a 404 error
+        // If no order is found, return error
         if (!order) {
             return res.status(404).json({ error: 'Order not found' });
         }
@@ -833,7 +833,7 @@ app.get('/offers/user/:username', async (req, res) => {
 });
 
 let users = {};
-// Real-Time Updates with Socket.IO
+// implement real-time with Socket.IO
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
@@ -853,7 +853,6 @@ io.on('connection', (socket) => {
             io.to(users[from]).emit('receiveMessage', { from, message });
         }
 
-        // You can also save the message to the database here
     });
     // Send new matches to clients in real-time
     const sendAllMatches = async () => {
