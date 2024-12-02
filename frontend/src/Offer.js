@@ -8,7 +8,7 @@ const Offer = () => {
     const [mealPoints, setMealPoints] = useState('');
     const [pricePerMealPoint, setPricePerMealPoint] = useState('');
     const [orderDetails, setOrderDetails] = useState(state?.order || null);
-    const navigate = useNavigate();  // Initialize navigate
+    const navigate = useNavigate();  
 
     useEffect(() => {
         console.log("Location state:", state); // Debugging log
@@ -29,7 +29,7 @@ const Offer = () => {
 
         try {
             const offerData = {
-                senderUsername: username,  // Use username instead of user.username
+                senderUsername: username,  
                 receiverUsername: recipient,
                 mealPoints,
                 pricePerMealPoint,
@@ -109,19 +109,18 @@ const Offer = () => {
     );
 };
 
-// Inline styles
 const styles = {
     container: {
-        padding: '20px', // Reduced padding
-        maxWidth: '400px', // Smaller maximum width
-        width: '100%', // Ensure it takes up full width until maxWidth is reached
-        margin: '65px auto', // Adds some space from the top and centers it horizontally
-        backgroundColor: '#fff', // White background
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Light shadow
+        padding: '20px', 
+        maxWidth: '400px', 
+        width: '100%', 
+        margin: '65px auto', 
+        backgroundColor: '#fff', 
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
         borderRadius: '10px',
         textAlign: 'center',
-        height: 'auto', // Let the height adjust automatically based on content
-        minHeight: '200px', // Optional: Set a minimum height if needed
+        height: 'auto', 
+        minHeight: '200px', 
     },
     header: {
         fontSize: '28px',
@@ -129,8 +128,8 @@ const styles = {
         color: '#000', // Black text
     },
     backButton: {
-        backgroundColor: 'rgb(204, 255, 0)', // Yellow background
-        color: '#000', // Black text
+        backgroundColor: 'rgb(204, 255, 0)', 
+        color: '#000', 
         padding: '10px 20px',
         border: 'none',
         borderRadius: '25px',
@@ -139,25 +138,25 @@ const styles = {
         transition: 'background-color 0.3s',
     },
     backButtonHover: {
-        backgroundColor: '#FF3B2F', // Red on hover
+        backgroundColor: '#FF3B2F', 
     },
     orderDetails: {
-        backgroundColor: '#f9f9f9', // Light grey background for order details
+        backgroundColor: '#f9f9f9', 
         padding: '20px',
         borderRadius: '10px',
         marginBottom: '20px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Light shadow
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', 
         color: '#000',
     },
     orderDetailsTitle: {
         fontSize: '22px',
         marginBottom: '15px',
-        color: '#000', // Black text for the order title
+        color: '#000', 
     },
     offerTitle: {
         fontSize: '22px',
         marginBottom: '15px',
-        color: '#000', // Black text for the offer title
+        color: '#000', 
     },
     form: {
         display: 'flex',
@@ -171,17 +170,17 @@ const styles = {
         fontSize: '16px',
         marginBottom: '5px',
         fontWeight: 'bold',
-        color: '#000', // Black text for labels
+        color: '#000', 
     },
     input: {
         padding: '10px',
         width: '100%',
-        border: '1px solid #ccc', // Light grey border
+        border: '1px solid #ccc', 
         borderRadius: '5px',
         fontSize: '16px',
     },
     submitButton: {
-        backgroundColor: 'rgb(204, 255, 0)', // Yellow background for the button
+        backgroundColor: 'rgb(204, 255, 0)', 
         color: '#000', // Black text
         padding: '12px 25px',
         border: 'none',
