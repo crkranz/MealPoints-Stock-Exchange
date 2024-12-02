@@ -74,7 +74,7 @@ const Dashboard = () => {
 
                 // Set the initial matches (both all and recent)
                 setAllMatches(matches);
-                setRecentMatches(matches.slice(0, 20)); // Assuming you want the 5 most recent matches
+                setRecentMatches(matches.slice(0, 20)); 
             } catch (error) {
                 console.error('Error fetching matches:', error);
             }
@@ -88,11 +88,9 @@ const Dashboard = () => {
 
         socket.on('balanceUpdate', (data) => {
             console.log('Balance updated:', data);
-            // Assuming you have the current user's username stored in a variable
-            const currentUser = username;  // Replace this with the actual variable holding the logged-in user's username
+            const currentUser = username;  
             if (data.username === currentUser) {
                 console.log('Balance updated:', data);
-                // Update UI only for the current logged-in user
                 setMealPoints(data.mealPoints);  // Update meal points
                 setAccountBalance(data.accountBalance);  // Update account balance
             }
@@ -105,7 +103,7 @@ const Dashboard = () => {
             setAllMatches(data);
         });
 
-        // Listen for recent matches (list data)
+        // Listen for recent matches
         socket.on('recentMatches', (data) => {
             setRecentMatches(data);
         });
@@ -126,12 +124,12 @@ const Dashboard = () => {
         ),
         datasets: [
             {
-                data: allMatches.map((match) => match.price), // Removed the label property
-                borderColor: 'rgba(255, 80, 0, 1)', // Red color for the line
+                data: allMatches.map((match) => match.price), 
+                borderColor: 'rgba(255, 80, 0, 1)', 
                 backgroundColor: 'rgba(255, 0, 0, 0.2)',
                 borderWidth: 1,
-                pointHoverRadius: 8, // Larger points when hovered
-                pointRadius: 0, // Removed visible points
+                pointHoverRadius: 8, 
+                pointRadius: 0, 
             },
         ],
     };
@@ -157,7 +155,7 @@ const Dashboard = () => {
                     display: false, // Hides the x-axis labels
                 },
                 grid: {
-                    display: false, // Optional: Hides the grid lines for the x-axis
+                    display: false, 
                 },
             },
             y: {
@@ -165,7 +163,7 @@ const Dashboard = () => {
                     beginAtZero: true, // Keeps the y-axis starting at zero
                 },
                 grid: {
-                    display: false, // Optional: Hides the grid lines for the y-axis
+                    display: false, 
                 },
             },
         },
@@ -185,8 +183,8 @@ const Dashboard = () => {
                 ctx.beginPath();
                 ctx.moveTo(x, topY);
                 ctx.lineTo(x, bottomY);
-                ctx.lineWidth = 2; // Increased line thickness for better visibility
-                ctx.strokeStyle = 'white'; // White line for better contrast
+                ctx.lineWidth = 2; 
+                ctx.strokeStyle = 'white'; 
                 ctx.stroke();
                 ctx.restore();
             }
@@ -255,7 +253,7 @@ const Dashboard = () => {
                 const data = await response.json();
                 alert('Bid placed successfully!');
 
-                // Optionally, update the orders list with the new bid
+                
                 setOrders(prevOrders => [...prevOrders, data.order]);
             } else {
                 const errorData = await response.json();
@@ -307,7 +305,6 @@ const Dashboard = () => {
                     setMatchedDetails(data.matchedDetails);
                 }
 
-                // Optionally, update the orders list with the new ask
                 setOrders(prevOrders => [...prevOrders, data.order]);
             } else {
                 const errorData = await response.json();
