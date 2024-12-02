@@ -101,6 +101,14 @@ const offerSchema = new mongoose.Schema({
 });
 const Offer = mongoose.model('Offer', offerSchema);
 
+const messageSchema = new mongoose.Schema({
+    from: { type: String, required: true },
+    to: { type: String, required: true },
+    message: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now },
+});
+
+const Message = mongoose.model('Message', messageSchema);
 
 
-module.exports = { User, Order, Match, Offer };
+module.exports = { User, Order, Match, Offer, Message };

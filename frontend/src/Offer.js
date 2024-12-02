@@ -70,41 +70,126 @@ const Offer = () => {
     }
 
     return (
-        <div>
-            <h1>Submit Private Offer to {recipient}</h1>
-            <button onClick={handleDashboard}>Back To {username}'s Dashboard</button>
-            <div>
-                <h3>Order Details:</h3>
+        <div style={styles.container}>
+            <h1 style={styles.header}>Submit Private Offer to {recipient}</h1>
+            <button onClick={handleDashboard} style={styles.backButton}>Back To {username}'s Dashboard</button>
+            <div style={styles.orderDetails}>
+                <h3 style={styles.orderDetailsTitle}>Order Details:</h3>
                 <p><strong>Price Per Meal Point:</strong> {orderDetails.pricePerMealPoint}</p>
                 <p><strong>Meal Points:</strong> {orderDetails.mealPoints}</p>
                 <p><strong>Order Type:</strong> {orderDetails.type}</p>
             </div>
-            <h3>Proposed Offer:</h3>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label htmlFor="mealPoints">Meal Points:</label>
+            <h3 style={styles.offerTitle}>Proposed Offer:</h3>
+            <form onSubmit={handleSubmit} style={styles.form}>
+                <div style={styles.inputGroup}>
+                    <label htmlFor="mealPoints" style={styles.label}>Meal Points:</label>
                     <input
                         type="number"
                         id="mealPoints"
                         value={mealPoints}
                         onChange={(e) => setMealPoints(e.target.value)}
                         placeholder="Enter meal points"
+                        style={styles.input}
                     />
                 </div>
-                <div>
-                    <label htmlFor="pricePerMealPoint">Price Per Meal Point:</label>
+                <div style={styles.inputGroup}>
+                    <label htmlFor="pricePerMealPoint" style={styles.label}>Price Per Meal Point:</label>
                     <input
                         type="number"
                         id="pricePerMealPoint"
                         value={pricePerMealPoint}
                         onChange={(e) => setPricePerMealPoint(e.target.value)}
                         placeholder="Enter price per meal point"
+                        style={styles.input}
                     />
                 </div>
-                <button type="submit">Send Offer</button>
+                <button type="submit" style={styles.submitButton}>Send Offer</button>
             </form>
         </div>
     );
 };
+
+// Inline styles
+const styles = {
+    container: {
+        padding: '20px', // Reduced padding
+        maxWidth: '400px', // Smaller maximum width
+        width: '100%', // Ensure it takes up full width until maxWidth is reached
+        margin: '65px auto', // Adds some space from the top and centers it horizontally
+        backgroundColor: '#fff', // White background
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Light shadow
+        borderRadius: '10px',
+        textAlign: 'center',
+        height: 'auto', // Let the height adjust automatically based on content
+        minHeight: '200px', // Optional: Set a minimum height if needed
+    },
+    header: {
+        fontSize: '28px',
+        marginBottom: '20px',
+        color: '#000', // Black text
+    },
+    backButton: {
+        backgroundColor: 'rgb(204, 255, 0)', // Yellow background
+        color: '#000', // Black text
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '25px',
+        cursor: 'pointer',
+        marginBottom: '20px',
+        transition: 'background-color 0.3s',
+    },
+    backButtonHover: {
+        backgroundColor: '#FF3B2F', // Red on hover
+    },
+    orderDetails: {
+        backgroundColor: '#f9f9f9', // Light grey background for order details
+        padding: '20px',
+        borderRadius: '10px',
+        marginBottom: '20px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Light shadow
+    },
+    orderDetailsTitle: {
+        fontSize: '22px',
+        marginBottom: '15px',
+        color: '#000', // Black text for the order title
+    },
+    offerTitle: {
+        fontSize: '22px',
+        marginBottom: '15px',
+        color: '#000', // Black text for the offer title
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '20px',
+    },
+    inputGroup: {
+        textAlign: 'left',
+    },
+    label: {
+        fontSize: '16px',
+        marginBottom: '5px',
+        fontWeight: 'bold',
+        color: '#000', // Black text for labels
+    },
+    input: {
+        padding: '10px',
+        width: '100%',
+        border: '1px solid #ccc', // Light grey border
+        borderRadius: '5px',
+        fontSize: '16px',
+    },
+    submitButton: {
+        backgroundColor: 'rgb(204, 255, 0)', // Yellow background for the button
+        color: '#000', // Black text
+        padding: '12px 25px',
+        border: 'none',
+        borderRadius: '25px',
+        cursor: 'pointer',
+        fontSize: '18px',
+        transition: 'background-color 0.3s',
+    },
+};
+
 
 export default Offer;

@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const { User, Order, Match, Offer } = require('../backend/models/User'); // Import models
+const { User, Order, Match, Offer, Message } = require('../backend/models/User'); // Import models
 const http = require('http');
 const { Server } = require('socket.io');
 
@@ -251,6 +251,12 @@ app.post('/placeAsk', async (req, res) => {
         for (let bid of matchingBids) {
             if (remainingAskPoints <= 0) break;
 
+            // Skip self-match
+            if (String(bid.user) === String(user._id)) {
+                console.log(`Skipping self-match for user ${user.username}`);
+                continue; // Skip balance updates if the user is the same
+            }
+
             const pointsToMatch = Math.min(remainingAskPoints, bid.mealPoints);
             remainingAskPoints -= pointsToMatch;
             bid.mealPoints -= pointsToMatch;
@@ -279,6 +285,7 @@ app.post('/placeAsk', async (req, res) => {
             });
             await match.save();
         }
+
 
         // Update ask order
         if (remainingAskPoints === 0) {
@@ -348,6 +355,12 @@ app.post('/placeBid', async (req, res) => {
         for (let ask of matchingAsks) {
             if (remainingBidPoints <= 0) break;
 
+            // Skip self-match
+            if (String(ask.user) === String(user._id)) {
+                console.log(`Skipping self-match for user ${user.username}`);
+                continue; // Skip balance updates if the user is the same
+            }
+
             const pointsToMatch = Math.min(remainingBidPoints, ask.mealPoints);
             remainingBidPoints -= pointsToMatch;
             ask.mealPoints -= pointsToMatch;
@@ -379,6 +392,7 @@ app.post('/placeBid', async (req, res) => {
             });
             await match.save();
         }
+
 
         // Update bid order
         if (remainingBidPoints === 0) {
@@ -681,6 +695,62 @@ app.post('/create-order', async (req, res) => {
         res.status(500).json({ error: 'Failed to create order' });
     }
 });
+app.post('/sendMessage', async (req, res) => {
+    const { from, to, message } = req.body;
+
+    if (!from || !to || !message) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    try {
+        const newMessage = new Message({ from, to, message });
+        await newMessage.save();
+        res.status(201).json(newMessage);
+    } catch (error) {
+        console.error('Error saving message:', error);
+        res.status(500).json({ error: 'Failed to send message' });
+    }
+});
+
+app.get('/getMessages', async (req, res) => {
+    const { from, to } = req.query;
+
+    if (!from || !to) {
+        return res.status(400).json({ error: 'Both from and to query parameters are required' });
+    }
+
+    try {
+        const messages = await Message.find({
+            $or: [
+                { from, to },
+                { from: to, to: from },
+            ],
+        }).sort({ timestamp: 1 }); // Sort messages by timestamp (oldest first)
+        res.status(200).json(messages);
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Failed to fetch messages' });
+    }
+});
+
+app.get('/getDMUsers', async (req, res) => {
+    const { user } = req.query; // Get logged-in user's username
+
+    if (!user) {
+        return res.status(400).json({ error: 'User parameter is required' });
+    }
+
+    try {
+        // Fetch all distinct users who have sent messages to the logged-in user
+        const users = await Message.distinct('from', { to: user });
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error('Error fetching DM users:', error);
+        res.status(500).json({ error: 'Failed to fetch DM users' });
+    }
+});
+
 app.post('/create-offer', async (req, res) => {
     try {
         const { senderUsername, receiverUsername, mealPoints, pricePerMealPoint, orderId } = req.body;
@@ -751,7 +821,8 @@ app.get('/offers/user/:username', async (req, res) => {
             $or: [
                 { senderUsername: username },
                 { receiverUsername: username }
-            ]
+            ],
+            status: 'pending' // Only include offers with status "pending"
         }).populate('orderId');
 
         res.status(200).json(userOffers);
@@ -761,11 +832,29 @@ app.get('/offers/user/:username', async (req, res) => {
     }
 });
 
+let users = {};
 // Real-Time Updates with Socket.IO
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
+    socket.on('register', (username) => {
+        users[username] = socket.id;
+        console.log(`${username} registered with socket ID: ${socket.id}`);
+    });
 
+    socket.on('sendMessage', (data) => {
+        const { from, to, message } = data;
+
+        // Emit the message to both users (from and to)
+        if (users[to]) {
+            io.to(users[to]).emit('receiveMessage', { from, message });
+        }
+        if (users[from]) {
+            io.to(users[from]).emit('receiveMessage', { from, message });
+        }
+
+        // You can also save the message to the database here
+    });
     // Send new matches to clients in real-time
     const sendAllMatches = async () => {
         try {
@@ -810,6 +899,12 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
+        for (let username in users) {
+            if (users[username] === socket.id) {
+                delete users[username];
+                break;
+            }
+        }
     });
 });
 

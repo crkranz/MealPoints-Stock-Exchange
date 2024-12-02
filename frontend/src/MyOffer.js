@@ -5,16 +5,16 @@ const MyOffer = () => {
     const { state } = useLocation(); // Retrieve state passed through the navigate
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();  // Initialize navigate
+    const navigate = useNavigate(); // Initialize navigate
 
     // Get the username from the state passed through navigation
     const { username } = state || {};
 
     useEffect(() => {
         if (!username) {
-            navigate('/login');  // Redirect to login if no username is passed
+            navigate('/login'); // Redirect to login if no username is passed
         } else {
-            fetchUserOffers(username);  // Fetch offers using the username
+            fetchUserOffers(username); // Fetch offers using the username
         }
     }, [username, navigate]);
 
@@ -35,13 +35,11 @@ const MyOffer = () => {
     };
 
     const handleDashboard = () => {
-        // Redirect the user to the dashboard with username in state
         navigate('/dashboard', { state: { username } });
     };
 
     const handleAccept = async (offer) => {
         try {
-            // Determine the endpoint based on the order type (bid or ask)
             let endpoint;
             if (offer.orderId.type === 'bid') {
                 endpoint = `http://localhost:3000/acceptOfferOnBid/${offer._id}`;
@@ -52,18 +50,14 @@ const MyOffer = () => {
                 return;
             }
 
-            // Send request to the appropriate endpoint
             const response = await fetch(endpoint, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'accepted' }),  // Update the status to 'accepted'
+                body: JSON.stringify({ status: 'accepted' }),
             });
 
             if (response.ok) {
-                const updatedOffer = await response.json();
-                alert('Offer accepted successfully! Transaction has been completed.');
-
-                // Update the offers state to reflect the new status
+                alert('Offer accepted successfully!');
                 setOffers(offers.map(o => o._id === offer._id ? { ...o, status: 'accepted' } : o));
             } else {
                 const errorData = await response.json();
@@ -75,63 +69,57 @@ const MyOffer = () => {
         }
     };
 
-
     const handleReject = async (offer) => {
         try {
-            // Assuming you want to update the status of the offer to 'denied'
             const response = await fetch(`http://localhost:3000/reject/${offer._id}`, {
-                method: 'PATCH',  // We use PATCH to update the status of the offer
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'denied' }),  // Send status 'denied'
+                body: JSON.stringify({ status: 'denied' }),
             });
 
             if (response.ok) {
-                const updatedOffer = await response.json();
                 alert('Offer rejected successfully!');
-                // Optionally, update the offers state to reflect the new status
-                setOffers(offers.map(o => o._id === offer._id ? updatedOffer : o));
+                setOffers(offers.map(o => o._id === offer._id ? { ...o, status: 'denied' } : o));
             } else {
                 const errorData = await response.json();
                 alert(`Failed to reject the offer: ${errorData.error}`);
             }
         } catch (error) {
-            console.error('Error rejecting offer:', error);
+            console.error('Error rejecting the offer:', error);
             alert('An error occurred while rejecting the offer.');
         }
     };
-
-
 
     if (loading) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div>
-            <h1>Private Offers for {username}:</h1>
-            <button onClick={handleDashboard}>Back To Dashboard</button>
+        <div style={styles.container}>
+            <h1 style={styles.heading}>Pending Offers for {username}:</h1>
+            <button onClick={handleDashboard} style={styles.button}>Back To Dashboard</button>
             <div>
                 {offers.length > 0 ? (
-                    <ul>
+                    <ul style={styles.offerList}>
                         {offers.map((offer) => (
-                            <li key={offer._id}>
+                            <li key={offer._id} style={styles.offerItem}>
                                 <p><strong>From:</strong> {offer.senderUsername}</p>
-
-                                {/* Show original order details */}
-                                <p><strong>Order ID:</strong> {offer.orderId._id}</p>  {/* Assuming orderId is an object */}
+                                <p><strong>Order ID:</strong> {offer.orderId._id}</p>
                                 <p><strong>Order Type:</strong> {offer.orderId.type}</p>
                                 <p><strong>Meal Points (Original Order):</strong> {offer.orderId.mealPoints}</p>
                                 <p><strong>Price Per Meal Point (Original Order):</strong> ${offer.orderId.pricePerMealPoint}</p>
-
-                                {/* Offer details */}
                                 <p><strong>Offer Meal Points:</strong> {offer.mealPoints}</p>
                                 <p><strong>Offer Price Per Meal Point:</strong> ${offer.pricePerMealPoint}</p>
                                 <p><strong>Status:</strong> {offer.status}</p>
                                 <p><strong>Sent At:</strong> {new Date(offer.timestamp).toLocaleString()}</p>
-
-                                {/* Accept/Reject Buttons */}
-                                <button onClick={() => handleAccept(offer)}>Accept</button>
-                                <button onClick={() => handleReject(offer)}>Reject</button>
+                                <div style={styles.buttonGroup}>
+                                    {offer.status === 'pending' && (
+                                        <>
+                                            <button onClick={() => handleAccept(offer)} style={styles.acceptButton}>Accept</button>
+                                            <button onClick={() => handleReject(offer)} style={styles.rejectButton}>Reject</button>
+                                        </>
+                                    )}
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -140,8 +128,64 @@ const MyOffer = () => {
                 )}
             </div>
         </div>
-
     );
+};
+
+const styles = {
+    container: {
+        padding: '20px',
+        textAlign: 'center',
+        fontFamily: 'Arial, sans-serif',
+    },
+    heading: {
+        fontSize: '24px',
+        fontWeight: 'bold',
+        marginBottom: '20px',
+        color: '#fff', // Dark text for good contrast on light backgrounds
+    },
+    button: {
+        backgroundColor: 'rgb(0, 128, 0)', // Dark green for better visibility
+        color: '#fff', // White text for contrast
+        padding: '10px 20px',
+        border: 'none',
+        borderRadius: '5px',
+        fontSize: '16px',
+        cursor: 'pointer',
+        marginBottom: '20px',
+    },
+    offerList: {
+        listStyleType: 'none',
+        padding: 0,
+        textAlign: 'left',
+    },
+    offerItem: {
+        backgroundColor: '#fff', // Light background for items
+        padding: '15px',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        marginBottom: '10px',
+        color: '#333', // Dark text color
+    },
+    buttonGroup: {
+        marginTop: '10px',
+    },
+    acceptButton: {
+        backgroundColor: '#28a745', // Green color with good contrast for acceptance
+        color: '#fff', // White text for readability
+        padding: '8px 16px',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        marginRight: '10px',
+    },
+    rejectButton: {
+        backgroundColor: '#dc3545', // Red color with good contrast for rejection
+        color: '#fff', // White text
+        padding: '8px 16px',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+    },
 };
 
 

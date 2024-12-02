@@ -1,0 +1,93 @@
+/* Container for the entire chat */
+.dm-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* Ensure content is at the top */
+    height: 100vh;
+    padding: 20px;
+    background-color: #2a2d32;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* Title Section */
+.dm-container h2 {
+    margin-bottom: 15px;
+    text-align: center;
+    color: #ff4d4d;
+    /* Accent color for title */
+}
+
+/* Chat box container */
+.chat-box {
+    flex-grow: 1;
+    overflow-y: scroll;
+    margin-bottom: 15px;
+    /* Reduced margin-bottom for better spacing */
+    padding: 15px;
+    background-color: #1c1f23;
+    border-radius: 8px;
+    border: 1px solid #444;
+}
+
+/* Individual messages styling */
+.chat-box p {
+    margin: 8px 0;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+/* Message from the current user */
+.chat-box p.current-user {
+    background-color: #4d4dff;
+    /* Blue for current user */
+    text-align: left;
+}
+
+/* Message from the target user */
+.chat-box p.target-user {
+    background-color: #ff4d4d;
+    /* Red for target user */
+    text-align: left;
+}
+
+/* Input section */
+.input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    /* Added space above the input */
+}
+
+/* Input field styling */
+.input-container input {
+    width: 80%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #333;
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 80px;
+}
+
+/* Button styling */
+.input-container button {
+    padding: 10px 20px;
+    background-color: #ff4d4d;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 80px;
+}
+
+/* Button hover effect */
+.input-container button:hover {
+    background-color: #cc3333;
+}
