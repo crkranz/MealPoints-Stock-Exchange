@@ -5,7 +5,7 @@ const MyOffer = () => {
     const { state } = useLocation(); // Retrieve state passed through the navigate
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate(); 
 
     const username = localStorage.getItem("storedUsername");
 
@@ -140,11 +140,11 @@ const styles = {
         fontSize: '24px',
         fontWeight: 'bold',
         marginBottom: '20px',
-        color: '#fff', // Dark text for good contrast on light backgrounds
+        color: '#fff', 
     },
     button: {
-        backgroundColor: 'rgb(0, 128, 0)', // Dark green for better visibility
-        color: '#fff', // White text for contrast
+        backgroundColor: 'rgb(0, 128, 0)', 
+        color: '#fff', 
         padding: '10px 20px',
         border: 'none',
         borderRadius: '5px',
@@ -158,19 +158,19 @@ const styles = {
         textAlign: 'left',
     },
     offerItem: {
-        backgroundColor: '#fff', // Light background for items
+        backgroundColor: '#fff', 
         padding: '15px',
         borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         marginBottom: '10px',
-        color: '#333', // Dark text color
+        color: '#333', 
     },
     buttonGroup: {
         marginTop: '10px',
     },
     acceptButton: {
-        backgroundColor: '#28a745', // Green color with good contrast for acceptance
-        color: '#fff', // White text for readability
+        backgroundColor: '#28a745', 
+        color: '#fff', 
         padding: '8px 16px',
         border: 'none',
         borderRadius: '5px',
@@ -178,8 +178,8 @@ const styles = {
         marginRight: '10px',
     },
     rejectButton: {
-        backgroundColor: '#dc3545', // Red color with good contrast for rejection
-        color: '#fff', // White text
+        backgroundColor: '#dc3545', 
+        color: '#fff', 
         padding: '8px 16px',
         border: 'none',
         borderRadius: '5px',
