@@ -65,7 +65,7 @@ const Login = ({ setLoggedIn }) => {
 
 const styles = {
   container: {
-    backgroundColor: '#fff', // White background
+    backgroundColor: '#fff', 
     minHeight: '100vh',
     display: 'flex',
     justifyContent: 'center',
@@ -85,7 +85,7 @@ const styles = {
     fontSize: '32px',
     fontWeight: 'bold',
     marginBottom: '20px',
-    color: '#2C3E50', // Dark blue-grey color
+    color: '#2C3E50', 
   },
   form: {
     display: 'flex',
@@ -101,7 +101,7 @@ const styles = {
     width: '100%',
   },
   button: {
-    backgroundColor: '#3498db', // Blue button
+    backgroundColor: '#3498db', 
     color: '#fff',
     padding: '15px',
     fontSize: '18px',
