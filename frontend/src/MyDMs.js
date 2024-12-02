@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const DMsList = () => {
-    const { state } = useLocation(); // Retrieve state passed through navigate
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate(); // Initialize navigate
 
-    // Get the username from the state passed through navigation
-    const { username } = state || {};
+    // Retrieve username and loggedIn status from localStorage
+    const username = localStorage.getItem("storedUsername");
+    const isLoggedIn = localStorage.getItem("loggedIn") === 'true';
 
     useEffect(() => {
-        if (!username) {
-            navigate('/login'); // Redirect to login if no username is passed
+        if (!isLoggedIn || !username) {
+            navigate('/login'); // Redirect to login if not logged in or no username is found
         } else {
             fetchDMUsers(username); // Fetch users who have sent DMs to the current user
         }
-    }, [username, navigate]);
+    }, [username, isLoggedIn, navigate]);
 
     const fetchDMUsers = async (username) => {
         try {

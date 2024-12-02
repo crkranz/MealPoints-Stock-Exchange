@@ -13,7 +13,7 @@ const Offer = () => {
     useEffect(() => {
         console.log("Location state:", state); // Debugging log
 
-        if (!username || !orderDetails) {
+        if (!localStorage.getItem("loggedIn") || !orderDetails) {
             navigate('/login');
         } else {
             setRecipient(orderDetails.user.username); // Assuming orderDetails has 'user' object
@@ -147,6 +147,7 @@ const styles = {
         borderRadius: '10px',
         marginBottom: '20px',
         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Light shadow
+        color: '#000',
     },
     orderDetailsTitle: {
         fontSize: '22px',

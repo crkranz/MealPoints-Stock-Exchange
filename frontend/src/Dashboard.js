@@ -27,15 +27,18 @@ const Dashboard = () => {
 
 
     useEffect(() => {
-        if (username) {
-            setUser({ username });
+        // Retrieve the username from localStorage
+        const storedUsername = localStorage.getItem('storedUsername');
+
+        if (storedUsername) {
+            setUser({ username: storedUsername });
             const fetchUserDetails = async () => {
                 try {
-                    const response = await fetch(`http://localhost:3000/user/${username}`);
+                    const response = await fetch(`http://localhost:3000/user/${storedUsername}`);
                     const data = await response.json();
                     setMealPoints(data.mealPoints); // Set initial meal points
                     setAccountBalance(data.accountBalance); // Set initial account balance
-                    console.log(username);
+                    console.log(storedUsername);
                 } catch (error) {
                     console.error('Error fetching user details:', error);
                 }
@@ -551,7 +554,7 @@ const Dashboard = () => {
 
             {/* Recent Matches */}
             <div className="recent-matches-title">
-                <h3>Recent Matches</h3>
+                <h3>Recent Transactions</h3>
             </div>
 
             <div className="recent-matches">

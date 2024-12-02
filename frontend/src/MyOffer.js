@@ -7,12 +7,11 @@ const MyOffer = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate(); // Initialize navigate
 
-    // Get the username from the state passed through navigation
-    const { username } = state || {};
+    const username = localStorage.getItem("storedUsername");
 
     useEffect(() => {
-        if (!username) {
-            navigate('/login'); // Redirect to login if no username is passed
+        if (!localStorage.getItem("loggedIn") || !username) {
+            navigate('/login'); // Redirect to login if no username or not logged in
         } else {
             fetchUserOffers(username); // Fetch offers using the username
         }

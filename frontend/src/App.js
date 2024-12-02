@@ -37,50 +37,44 @@ const Welcome = () => {
         </div>
     );
 };
-
 const App = () => {
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
     const navigate = useNavigate();
 
-
     useEffect(() => {
-
+        // Retrieve loggedIn and username from localStorage
         const loggedInState = localStorage.getItem('loggedIn');
-        const storedUsername = localStorage.getItem('username');
-
+        const storedUsername = localStorage.getItem('storedUsername');
 
         if (loggedInState === 'true' && storedUsername) {
             setLoggedIn(true);
             setUsername(storedUsername);
-        } else {
-            console.log('User not logged in, state not updated');
         }
     }, []);
 
     const handleLogout = () => {
-
+        // Remove loggedIn and username from localStorage
         localStorage.removeItem('loggedIn');
-        localStorage.removeItem('username');
+        localStorage.removeItem('storedUsername');
 
-
+        // Update state
         setLoggedIn(false);
         setUsername("");
 
+        // Redirect to home
         navigate('/');
     };
 
     const handleMyOffer = () => {
-        // Navigate to 'myoffer' page and pass the username
         navigate('/myoffer', { state: { username } });
     };
+
     const handleMyDMs = () => {
-        // Navigate to 'myoffer' page and pass the username
         navigate('/mydms', { state: { username } });
     };
 
     const handleDashboard = () => {
-        // Navigate to 'dashboard' page and pass the username
         navigate('/dashboard', { state: { username } });
     };
 
@@ -90,9 +84,9 @@ const App = () => {
                 <Link to="/" style={styles.navLink}>Home</Link>
                 {loggedIn ? (
                     <>
-                        <button onClick={handleDashboard} style={styles.navLink}>Dashboard</button> {/* Link to Dashboard */}
-                        <button onClick={handleMyOffer} style={styles.navLink}>My Offers</button> {/* Link to My Offers */}
-                        <button onClick={handleMyDMs} style={styles.navLink}>Private Messages</button> {/* Link to My DMs */}
+                        <button onClick={handleDashboard} style={styles.navLink}>Dashboard</button>
+                        <button onClick={handleMyOffer} style={styles.navLink}>My Offers</button>
+                        <button onClick={handleMyDMs} style={styles.navLink}>Private Messages</button>
                         <button onClick={handleLogout} style={styles.navLink}>Logout</button>
                     </>
                 ) : (
@@ -120,6 +114,7 @@ const App = () => {
         </div>
     );
 };
+
 const styles = {
     mainContainer: {
         display: 'flex',
