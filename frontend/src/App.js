@@ -119,13 +119,13 @@ const styles = {
     mainContainer: {
         display: 'flex',
         flexDirection: 'column',
-        minHeight: '100vh', // Ensures footer sticks to the bottom
-        fontFamily: 'Arial, sans-serif', // Unified font for the main content
+        minHeight: '100vh', 
+        fontFamily: 'Arial, sans-serif', 
     },
     navbar: {
-        backgroundColor: 'rgb(204, 255, 0)', // Bright yellow-green
+        backgroundColor: 'rgb(204, 255, 0)', 
         color: '#000',
-        padding: '3px 0', // Reduced padding
+        padding: '3px 0', 
         textAlign: 'center',
         width: '100%',
         boxSizing: 'border-box',
@@ -134,26 +134,26 @@ const styles = {
         left: 0,
         zIndex: 1000,
         fontFamily: 'Arial, sans-serif',
-        fontSize: '14px', // Reduced font size
+        fontSize: '14px', 
     },
     navLink: {
-        color: '#000', // Black text for the links
+        color: '#000', 
         margin: '0 13px',
         textDecoration: 'none',
         fontSize: '15px',
         background: 'none',
         border: 'none',
-        fontFamily: 'Arial, sans-serif', // Ensure all links use the same font family
+        fontFamily: 'Arial, sans-serif', 
     },
 
     welcomeContainer: {
-        background: '#fff', // White background
-        color: '#000', // Black text for the body content
+        background: '#fff', 
+        color: '#000', 
         textAlign: 'center',
         padding: '50px 20px',
-        flexGrow: 1, // Ensures content area grows to fill the space
-        paddingTop: '200px', // Increase top padding to push content down more
-        fontFamily: 'Arial, sans-serif', // Unified font for content
+        flexGrow: 1, 
+        paddingTop: '200px', 
+        fontFamily: 'Arial, sans-serif', 
     },
     heroSection: {
         marginBottom: '50px',
@@ -174,14 +174,14 @@ const styles = {
         gap: '20px',
     },
     button: {
-        backgroundColor: 'rgb(204, 255, 0)', // Warm red tone
+        backgroundColor: 'rgb(204, 255, 0)', 
         color: '#000',
         padding: '15px 30px',
         textDecoration: 'none',
         borderRadius: '50px',
         fontSize: '18px',
         transition: 'background-color 0.3s',
-        fontFamily: 'Arial, sans-serif', // Consistent font for buttons
+        fontFamily: 'Arial, sans-serif', 
     },
     buttonHover: {
         backgroundColor: '#FF3B2F',
@@ -211,7 +211,7 @@ const styles = {
         fontWeight: '300',
     },
     footer: {
-        backgroundColor: 'rgb(204, 255, 0)', // Bright yellow-green
+        backgroundColor: 'rgb(204, 255, 0)', 
         color: '#000',
         textAlign: 'center',
         width: '100%',
@@ -220,15 +220,15 @@ const styles = {
         bottom: 0,
         left: 0,
         zIndex: 1000,
-        height: '30px', // Set a fixed, smaller height
-        display: 'flex', // Use flexbox for centering
-        alignItems: 'center', // Vertically center text
-        justifyContent: 'center', // Horizontally center text
-        overflow: 'hidden', // Prevent content overflow
+        height: '30px', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        overflow: 'hidden', 
         fontFamily: 'Arial, sans-serif',
-        fontSize: '12px', // Smaller font size
-        padding: '0 10px', // Add horizontal padding to avoid cutting text
-        margin: 0, // Ensure no extra margin
+        fontSize: '12px', 
+        padding: '0 10px', 
+        margin: 0, 
     }
 
 }
