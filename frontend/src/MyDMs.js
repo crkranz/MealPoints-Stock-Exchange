@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 const DMsList = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate(); 
 
     // Retrieve username and loggedIn status from localStorage
     const username = localStorage.getItem("storedUsername");
