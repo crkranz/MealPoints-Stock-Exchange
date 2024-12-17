@@ -1,4 +1,4 @@
-# Project Title: Market Platform with Real-Time Communication
+# MealPoints Stock Exchange
 
 This project is a market platform where users can interact, place buy and sell orders, negotiate directly through messages, and track market trends in real time. It incorporates modern web technologies and provides an interactive, dynamic environment for trading.
 
