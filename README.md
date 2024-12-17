@@ -28,6 +28,7 @@ This project includes creative elements that enhance the user experience:
 
 - **Real-Time Updates with Socket.IO**: Socket.IO was integrated into both the frontend and backend, enabling live updates for order matches, new bids, current market trends, and private messages. The real-time functionality ensures that users receive instant notifications about changes and actions on the platform.
 - **Private Offer System**: Users can make private offers on specific bids or asks. Offers are stored in the MongoDB offers collection and can be marked with statuses such as "pending," "accepted," or "denied." Recipients can view these offers and manage them through the "My Offers" page, where they can accept or reject them. When an offer is accepted, the transaction is processed automatically, updating meal points and account balances for both users.
+![Project Screenshot](mealpoints.png)
 
 ### Conclusion
 This project demonstrates the integration of multiple technologies to create an interactive and functional platform. By combining React, Express, and MongoDB with real-time communication and private offer features, the platform offers an engaging experience for users looking to interact and trade.
