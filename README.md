@@ -1,30 +1,33 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/7yqbrEZI)
-# CSE330
-Riva Kranz 508687 crkranz 
-Michael Lerman 497967 mikeylerman
+# Project Title: Market Platform with Real-Time Communication
 
-Creative Project Rubric
+This project is a market platform where users can interact, place buy and sell orders, negotiate directly through messages, and track market trends in real time. It incorporates modern web technologies and provides an interactive, dynamic environment for trading.
 
-Rubric turned in on time (5 points)
+### Languages and Frameworks Used
+The project was built using the following technologies:
 
-Garrett Approved!
+- **React**: The frontend of the platform is built with React to create a dynamic and responsive user interface.
+- **Express (Node.js)**: The backend of the platform uses Express, a Node.js framework, to manage server-side logic and route handling.
+- **MongoDB**: The database is MongoDB, used to store user data, orders, transactions, and other platform-related information.
 
-Languages / Frameworks Used (30 points)
-- learned Learned/used react fronted (10 points)
-- Learned/used express (node.js) backend (10 points)
-- learned/used mongodb database (10 points)
+### Core Features
+The platform provides several key features for users:
 
-Functionality (40 points)
-- Users can register, login, and logout. (5 points)
-- Logged in Users can place buy and sell orders (10 points)
-- Orders are executed upon a match of buy and sell orders. (5 points)
-- Users can DM each other to negotiate (10 points)
-- Users can see market data, including trends in meal points price and previous transactions. (10 points)
+- **User Authentication**: Users can register, log in, and log out securely. The authentication process ensures that users are authenticated before placing any orders or engaging in messaging.
+- **Order Management**: Logged-in users can place buy and sell orders. When a match is found between a buy and sell order, the orders are executed automatically.
+- **Direct Messaging (DM)**: Users can send direct messages to each other to negotiate terms, discuss prices, or make private offers.
+- **Market Data**: Users can view real-time market data, including trends in meal points prices and a history of previous transactions.
 
-Best Practices (5 points)
-- code well formatted (2 points)
-- HTML output passes validator (3 points)
+### Best Practices
+To ensure code quality and consistency, the project follows best practices:
 
-Creative Portion (20 points)
-- Integrated Socket.IO into both the backend and frontend to enable real-time updates and seamless communication across various features. This integration ensures that users receive live updates on order matches, new bids, current market values, and private messages. It also includes watchers for updates to users, orders, and matches, ensuring that all changes are promptly captured. Real-time chat functionality has been added, allowing users to communicate instantly.
-- Implemented a private offer feature, allowing users to make direct offers on specific bids or asks. These offers are stored in the MongoDB offers collection and marked with statuses such as pending, accepted, or denied. Recipients can view and manage their offers through the "My Offers" page, deciding whether to accept or reject them. If an offer is accepted, the transaction is processed automatically, reflecting the updated meal points and account balances for both users.
+- **Code Formatting**: The code is well-formatted and adheres to established conventions for readability and maintainability.
+- **HTML Validation**: The HTML output passes the W3C validator to ensure it is semantically correct and meets accessibility standards.
+
+### Creative Features
+This project includes creative elements that enhance the user experience:
+
+- **Real-Time Updates with Socket.IO**: Socket.IO was integrated into both the frontend and backend, enabling live updates for order matches, new bids, current market trends, and private messages. The real-time functionality ensures that users receive instant notifications about changes and actions on the platform.
+- **Private Offer System**: Users can make private offers on specific bids or asks. Offers are stored in the MongoDB offers collection and can be marked with statuses such as "pending," "accepted," or "denied." Recipients can view these offers and manage them through the "My Offers" page, where they can accept or reject them. When an offer is accepted, the transaction is processed automatically, updating meal points and account balances for both users.
+
+### Conclusion
+This project demonstrates the integration of multiple technologies to create an interactive and functional platform. By combining React, Express, and MongoDB with real-time communication and private offer features, the platform offers an engaging experience for users looking to interact and trade.
